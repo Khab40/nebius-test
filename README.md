@@ -1,66 +1,81 @@
-# Nebius Test Project
+# Repo Summarizer API (FastAPI)
 
-A test project for Nebius cloud platform integration and development using Python.
+API service that accepts a public GitHub repository URL and returns:
+- a human-readable summary
+- main technologies used
+- brief project structure description
 
-## Setup
+It downloads the repo as a ZIP, filters/chooses the most relevant files (README/docs/configs/tree + selected code),
+fits them into the LLM context window, and calls an LLM to generate the summary.
 
-### Prerequisites
-- Python 3.10 or higher
-- pip (Python package manager)
-- Virtual environment (venv or similar)
-- Nebius Cloud account
+## Requirements
+- Python 3.10+
 
-### Installation
+## LLM providers
+Supports **OpenAI by default**, and **Nebius Token Factory** optionally.
 
-1. Clone the repository:
+### OpenAI (default)
+Env vars:
+- `OPENAI_API_KEY` (required)
+- `OPENAI_MODEL` (optional, default: `gpt-4o-mini`)
+- `OPENAI_BASE_URL` (optional, default: `https://api.openai.com/v1/`)
+- `LLM_PROVIDER` (optional, default: `openai`)
+
+### Nebius Token Factory (optional)
+Env vars:
+- `NEBIUS_API_KEY` (required)
+- `NEBIUS_MODEL` (optional, default: `meta-llama/Meta-Llama-3.1-8B-Instruct-fast`)
+- `NEBIUS_BASE_URL` (optional, default: `https://api.tokenfactory.nebius.com/v1/`)
+- `LLM_PROVIDER=nebius`
+
+## Install (local dev, no Docker)
 ```bash
-git clone <repository-url>
-cd nebius-test
-```
-
-2. Create and activate a virtual environment:
-```bash
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-3. Install dependencies:
-```bash
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-4. Configure environment variables:
+## Run locally (OpenAI)
 ```bash
-cp .env.example .env
+export LLM_PROVIDER=openai
+export OPENAI_API_KEY="YOUR_OPENAI_KEY"
+# Optional:
+export OPENAI_MODEL="gpt-4o-mini"
+
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-5. Update `.env` with your Nebius credentials:
-```
-NEBIUS_API_KEY=<your-api-key>
-NEBIUS_API_SECRET=<your-api-secret>
-NEBIUS_ACCOUNT_ID=<your-account-id>
-```
-
-### Running the Project
-
+## Run locally (Nebius)
 ```bash
-python main.py
+export LLM_PROVIDER=nebius
+export NEBIUS_API_KEY="YOUR_NEBIUS_KEY"
+# Optional:
+export NEBIUS_MODEL="meta-llama/Meta-Llama-3.1-8B-Instruct-fast"
+
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-## Configuration
-
-All configuration is managed through environment variables in the `.env` file. See `.env` for available options.
-
-## Development
-
+## Test
 ```bash
-python main.py --debug
+curl -X POST http://localhost:8000/summarize   -H "Content-Type: application/json"   -d '{"github_url": "https://github.com/psf/requests"}'
 ```
 
-## Contributing
+## Docker (optional)
+```bash
+# OpenAI:
+export OPENAI_API_KEY="YOUR_OPENAI_KEY"
+docker compose up --build
+```
 
-Please follow the project's contribution guidelines.
+## Error format
+On error:
+```json
+{ "status": "error", "message": "..." }
+```
 
-## License
-
-MIT
+## Repo→LLM strategy (what we send)
+1) Directory tree (depth-limited; ignores node_modules, dist, venv, binaries, etc.)
+2) README + key docs
+3) Dependency/config files
+4) Endpoint-ish / entrypoint / main modules
+5) Strict truncation budget to fit context window

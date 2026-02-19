@@ -1,10 +1,10 @@
 import json
 import re
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 from .selection import build_tree, select_files, safe_read_text, detect_languages_and_tools
-from .nebius import chat_completion, NebiusError
+from .llm import chat_completion, LLMError
 
 
 class SummarizationError(Exception):
@@ -15,22 +15,12 @@ JSON_BLOCK_RE = re.compile(r"\{.*\}", re.DOTALL)
 
 
 def build_context(repo_root: Path, max_total_chars: int = 22000) -> str:
-    """
-    Strategy (matches your prompt):
-    1) README + important docs
-    2) Directory tree
-    3) Config files for deps/tech
-    4) “endpoint-ish” files and main modules with comments/docstrings
-    5) Hard cap to fit LLM context
-    """
     parts: List[str] = []
-
     tree = build_tree(repo_root, max_depth=4)
     parts.append("=== DIRECTORY TREE (truncated) ===\n" + tree)
 
     selected = select_files(repo_root, max_files=28)
 
-    # Per-file caps: docs bigger, code smaller
     def per_file_cap(p: Path) -> int:
         name = p.name.lower()
         if "readme" in name:
@@ -41,7 +31,6 @@ def build_context(repo_root: Path, max_total_chars: int = 22000) -> str:
             return 4000
         return 2000
 
-    # Add files until max_total_chars reached
     total = sum(len(x) for x in parts)
     for sf in selected:
         rel = sf.path.relative_to(repo_root)
@@ -58,13 +47,11 @@ def build_context(repo_root: Path, max_total_chars: int = 22000) -> str:
 
 
 def parse_llm_json(text: str) -> Dict:
-    # Try direct JSON first
     try:
         return json.loads(text)
     except Exception:
         pass
 
-    # Try extracting a JSON object from within text
     m = JSON_BLOCK_RE.search(text)
     if m:
         try:
@@ -84,8 +71,7 @@ async def summarize_repo(repo_root: Path) -> Dict:
         "Given a GitHub repository snapshot, produce a concise, human-readable summary."
     )
 
-    user = f"""
-Return ONLY valid JSON with keys: summary (string), technologies (array of strings), structure (string).
+    user = f"""Return ONLY valid JSON with keys: summary (string), technologies (array of strings), structure (string).
 
 Rules:
 - summary: what the project does (2-6 sentences).
@@ -108,12 +94,11 @@ Repository content (filtered & truncated):
             ],
             temperature=0.2,
         )
-    except NebiusError as e:
+    except LLMError as e:
         raise SummarizationError(str(e)) from e
 
     data = parse_llm_json(out)
 
-    # Normalize fields
     summary = str(data.get("summary", "")).strip()
     technologies = data.get("technologies", [])
     structure = str(data.get("structure", "")).strip()
@@ -122,7 +107,6 @@ Repository content (filtered & truncated):
         raise SummarizationError("LLM JSON missing required fields.")
 
     technologies = [str(x).strip() for x in technologies if str(x).strip()]
-    # add heuristic langs if LLM missed them
     for l in langs:
         if l not in technologies:
             technologies.append(l)
