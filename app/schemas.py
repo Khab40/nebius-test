@@ -1,6 +1,5 @@
 from pydantic import BaseModel, Field, HttpUrl
 
-
 class SummarizeRequest(BaseModel):
     github_url: HttpUrl = Field(..., description="URL of a public GitHub repository")
 
