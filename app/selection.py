@@ -1,5 +1,4 @@
-import os
-import re
+import os, re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, List, Tuple

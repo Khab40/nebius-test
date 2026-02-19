@@ -1,8 +1,5 @@
-import os
+import os, httpx
 from typing import Any, Dict, List, Optional
-
-import httpx
-
 
 class NebiusError(Exception):
     pass

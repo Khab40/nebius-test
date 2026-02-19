@@ -1,12 +1,7 @@
-import io
-import re
-import zipfile
-import tempfile
+import io, re, zipfile, tempfile, httpx
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, Tuple
-
-import httpx
 
 GITHUB_REPO_RE = re.compile(
     r"^https?://github\.com/(?P<owner>[^/]+)/(?P<repo>[^/#?]+)(?:/|$)"
