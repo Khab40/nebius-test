@@ -1,22 +1,23 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+# Requires uv: https://astral.sh/uv
+# Install: curl -Ls https://astral.sh/uv/install.sh | sh
 
 : "${LLM_PROVIDER:=openai}"
 
 if [[ "$LLM_PROVIDER" == "openai" ]]; then
-  if [[ -z "${OPENAI_API_KEY:-}" ]]; then
-    echo "OPENAI_API_KEY is not set. Export it first:"
+  if [[ -z "${OPENAI_API_KEY:-}" && ! -f .env ]]; then
+    echo "OPENAI_API_KEY is not set and .env not found. Either:"
     echo '  export OPENAI_API_KEY="..."'
+    echo "or create .env (see .env.example)"
     exit 1
   fi
 elif [[ "$LLM_PROVIDER" == "nebius" ]]; then
-  if [[ -z "${NEBIUS_API_KEY:-}" ]]; then
-    echo "NEBIUS_API_KEY is not set. Export it first:"
+  if [[ -z "${NEBIUS_API_KEY:-}" && ! -f .env ]]; then
+    echo "NEBIUS_API_KEY is not set and .env not found. Either:"
     echo '  export NEBIUS_API_KEY="..."'
+    echo "or create .env (see .env.example)"
     exit 1
   fi
 else
@@ -24,5 +25,11 @@ else
   exit 1
 fi
 
+uv python install 3.12
+uv venv --python 3.12
+uv pip install -r requirements.txt
+
+source .venv/bin/activate
+
 echo "Starting server on http://localhost:8000 (provider=$LLM_PROVIDER)"
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
