@@ -1,3 +1,15 @@
+import os
+
+# Load .env only for local development.
+# Set ENV=prod (or anything other than "dev") to disable.
+if os.getenv("ENV", "dev").lower() == "dev":
+    try:
+        from dotenv import load_dotenv
+        load_dotenv()
+    except Exception:
+        # dotenv is optional in production; if missing, rely on real env vars.
+        pass
+    
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 
