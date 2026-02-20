@@ -19,6 +19,7 @@ Env vars:
 - `OPENAI_API_KEY` (required)
 - `OPENAI_MODEL` (optional, default: `gpt-4o-mini`)
 - `OPENAI_EMBEDDING_MODEL` (optional, default: `text-embedding-3-small`)
+  Note: `OPENAI_EMBEDDING_MODEL` controls the embeddings model used for RAG retrieval when `LLM_PROVIDER=openai` (default: `text-embedding-3-small`).
 - `OPENAI_BASE_URL` (optional, default: `https://api.openai.com/v1/`)
 - `LLM_PROVIDER` (optional, default: `openai`)
 
@@ -85,6 +86,15 @@ On error:
 4) Deterministic extraction: dependencies + entrypoints + detected endpoints
 5) RAG-selected code chunks: chunk selected important files and retrieve top relevant chunks for: what it does / how to run / endpoints / structure / deps
 
+
+## RAG retrieval (implementation)
+To fit large repositories into the LLM context while keeping high signal, the service uses a lightweight RAG step:
+- select important files (README/docs/configs + entrypoints/routes)
+- chunk file contents with overlap
+- retrieve top‑K relevant chunks for fixed questions (what it does / how to run / endpoints / structure / deps)
+- OpenAI provider uses semantic retrieval via embeddings; Nebius falls back to keyword retrieval
+
+The selected snippets (with evidence file names) are combined with a depth‑limited directory tree and deterministic facts before calling the LLM.
 
 ## Answers on submission questions (Khab40)
 Q: Which model you chose and why?

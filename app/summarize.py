@@ -4,7 +4,14 @@ from pathlib import Path
 from typing import Dict, List
 
 from .selection import build_tree, select_files, safe_read_text, detect_languages_and_tools
-from .llm import chat_completion, LLMError
+
+# RAG chunk retrieval (top-K relevant snippets). If app/rag.py is missing or disabled,
+# summarization will fall back to the classic context builder.
+try:
+    from .rag import build_chunks, rag_select  # type: ignore
+except Exception:  # pragma: no cover
+    build_chunks = None
+    rag_select = None
 
 
 class SummarizationError(Exception):
@@ -46,6 +53,47 @@ def build_context(repo_root: Path, max_total_chars: int = 22000) -> str:
     return "\n".join(parts)
 
 
+async def build_rag_context(repo_root: Path, max_chars: int = 14000) -> tuple[str, List[str]]:
+    """Build a compact context using RAG-selected chunks.
+
+    Returns: (context_text, evidence_files)
+    """
+    if build_chunks is None or rag_select is None:
+        return "", []
+
+    chunks = build_chunks(repo_root)
+    queries = [
+        "What does this project do?",
+        "How do you install, run, and test this project?",
+        "What is the project structure (src/tests/docs)?",
+        "What API endpoints exist and how are they implemented?",
+        "What are the main dependencies and technologies?",
+    ]
+    picked = await rag_select(chunks, queries, top_k=10)
+
+    evidence: List[str] = []
+    parts: List[str] = []
+    total = 0
+
+    for c in picked:
+        evidence.append(c.file)
+        chunk = f"\n\n=== RAG CHUNK: {c.file} ===\n{c.text.strip()}"
+        if total + len(chunk) > max_chars:
+            break
+        parts.append(chunk)
+        total += len(chunk)
+
+    # de-dupe evidence preserving order
+    seen = set()
+    evidence_unique: List[str] = []
+    for e in evidence:
+        if e not in seen:
+            seen.add(e)
+            evidence_unique.append(e)
+
+    return "\n".join(parts).strip(), evidence_unique[:50]
+
+
 def parse_llm_json(text: str) -> Dict:
     try:
         return json.loads(text)
@@ -64,7 +112,20 @@ def parse_llm_json(text: str) -> Dict:
 
 async def summarize_repo(repo_root: Path) -> Dict:
     langs = detect_languages_and_tools(repo_root)
-    context = build_context(repo_root)
+
+    # Prefer RAG-selected chunks to fit the context window while keeping high signal.
+    tree_only = "=== DIRECTORY TREE (truncated) ===\n" + build_tree(repo_root, max_depth=4)
+    rag_context, rag_evidence = await build_rag_context(repo_root)
+
+    if rag_context.strip():
+        context = tree_only + "\n" + rag_context
+        evidence = rag_evidence
+        retrieval_mode = "rag-10chunks"
+    else:
+        # Fallback to classic (non-RAG) context builder
+        context = build_context(repo_root)
+        evidence = []
+        retrieval_mode = "classic"
 
     system = (
         "You are a senior software engineer. "
@@ -82,7 +143,10 @@ Rules:
 Repository signals:
 Detected languages/tools (heuristic): {langs}
 
-Repository content (filtered & truncated):
+Repository content (directory tree + RAG-selected snippets; filtered & truncated):
+- retrieval_mode: {retrieval_mode}
+- evidence_files: {evidence}
+
 {context}
 """.strip()
 
