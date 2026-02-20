@@ -6,7 +6,7 @@ set -euo pipefail
 
 uv python install 3.12
 uv venv --python 3.12
-uv pip install -r requirements.txt
+uv pip install -r app/requirements.txt
 
 echo "✅ Ready. Activate with:"
 echo "  source .venv/bin/activate"

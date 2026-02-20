@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 set -euo pipefail
-docker build -t nebius-test:local .
+docker build -f app/Dockerfile -t repo-summarizer-api:local .

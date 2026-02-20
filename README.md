@@ -32,7 +32,7 @@ Env vars:
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r app/requirements.txt
 ```
 
 ## Run locally (OpenAI)
@@ -65,6 +65,9 @@ curl -X POST http://localhost:8000/summarize   -H "Content-Type: application/jso
 # OpenAI:
 export OPENAI_API_KEY="YOUR_OPENAI_KEY"
 docker compose up --build
+
+# Or build the API image directly:
+docker build -f app/Dockerfile -t repo-summarizer-api:local .
 ```
 
 ## Error format
@@ -82,8 +85,8 @@ On error:
 
 
 ## Answers on submission questions (Khab40)
-### Q: Which model you chose and why?
-### A: I chose gpt-4o-mini for Open AI and meta-llama/Meta-Llama-3.1-8B-Instruct-fast for Nebius because of the wish to keep balance between quality, speed and cost.
+Q: Which model you chose and why?
+A: I chose gpt-4o-mini for Open AI and meta-llama/Meta-Llama-3.1-8B-Instruct-fast for Nebius because of the wish to keep balance between quality, speed and cost.
 
-### Q: Your approach to handling repository contents
-### A: Exclude binaries, build artifacts, generated data; take folders tree, documents, API end-points, etc. Can be improved with chunks, RAG but decided to make it simple and fast to supply to Nebius. 
+Q: Your approach to handling repository contents
+A: Exclude binaries, build artifacts, generated data; take folders tree, documents, API end-points, etc. Can be improved with chunks, RAG but decided to make it simple and fast to supply to Nebius. 
