@@ -79,3 +79,11 @@ On error:
 3) Dependency/config files
 4) Endpoint-ish / entrypoint / main modules
 5) Strict truncation budget to fit context window
+
+
+## Answers on submission questions (Khab40)
+### Q: Which model you chose and why?
+### A: I chose gpt-4o-mini for Open AI and meta-llama/Meta-Llama-3.1-8B-Instruct-fast for Nebius because of the wish to keep balance between quality, speed and cost.
+
+### Q: Your approach to handling repository contents
+### A: Exclude binaries, build artifacts, generated data; take folders tree, documents, API end-points, etc. Can be improved with chunks, RAG but decided to make it simple and fast to supply to Nebius. 
