@@ -15,3 +15,13 @@ services:
       NEBIUS_API_KEY: ${NEBIUS_API_KEY}
       NEBIUS_MODEL: ${NEBIUS_MODEL:-meta-llama/Meta-Llama-3.1-8B-Instruct-fast}
       NEBIUS_BASE_URL: ${NEBIUS_BASE_URL:-https://api.tokenfactory.nebius.com/v1/}
+  ui:
+    build:
+      context: .
+      dockerfile: ui/Dockerfile
+    ports:
+      - "8501:8501"
+    environment:
+      API_BASE_URL: http://api:8000
+    depends_on:
+      - api

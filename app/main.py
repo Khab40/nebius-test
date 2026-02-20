@@ -30,6 +30,26 @@ from .summarize import summarize_repo, SummarizationError
 
 app = FastAPI(title="Repo Summarizer API", version="1.0.0")
 
+@app.get("/")
+async def root():
+    return {"message": "Repo Summarizer API"}
+
+
+# ✅ NEW HEALTH ENDPOINT
+@app.get("/health")
+async def health():
+    return {
+        "status": "ok",
+        "service": "repo-summarizer-api",
+    }
+
+@app.get("/health/live")
+async def live():
+    return {"status": "alive"}
+
+@app.get("/health/ready")
+async def ready():
+    return {"status": "ready"}
 
 @app.post("/summarize", response_model=SummarizeResponse, responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}, 429: {"model": ErrorResponse}, 500: {"model": ErrorResponse}})
 async def summarize(req: SummarizeRequest):
