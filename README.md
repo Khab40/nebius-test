@@ -18,6 +18,7 @@ Supports **OpenAI by default**, and **Nebius Token Factory** optionally.
 Env vars:
 - `OPENAI_API_KEY` (required)
 - `OPENAI_MODEL` (optional, default: `gpt-4o-mini`)
+- `OPENAI_EMBEDDING_MODEL` (optional, default: `text-embedding-3-small`)
 - `OPENAI_BASE_URL` (optional, default: `https://api.openai.com/v1/`)
 - `LLM_PROVIDER` (optional, default: `openai`)
 
@@ -41,6 +42,7 @@ export LLM_PROVIDER=openai
 export OPENAI_API_KEY="YOUR_OPENAI_KEY"
 # Optional:
 export OPENAI_MODEL="gpt-4o-mini"
+export OPENAI_EMBEDDING_MODEL="text-embedding-3-small"
 
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
@@ -80,8 +82,8 @@ On error:
 1) Directory tree (depth-limited; ignores node_modules, dist, venv, binaries, etc.)
 2) README + key docs
 3) Dependency/config files
-4) Endpoint-ish / entrypoint / main modules
-5) Strict truncation budget to fit context window
+4) Deterministic extraction: dependencies + entrypoints + detected endpoints
+5) RAG-selected code chunks: chunk selected important files and retrieve top relevant chunks for: what it does / how to run / endpoints / structure / deps
 
 
 ## Answers on submission questions (Khab40)
@@ -89,4 +91,4 @@ Q: Which model you chose and why?
 A: I chose gpt-4o-mini for Open AI and meta-llama/Meta-Llama-3.1-8B-Instruct-fast for Nebius because of the wish to keep balance between quality, speed and cost.
 
 Q: Your approach to handling repository contents
-A: Exclude binaries, build artifacts, generated data; take folders tree, documents, API end-points, etc. Can be improved with chunks, RAG but decided to make it simple and fast to supply to Nebius. 
+A: Exclude binaries/build artifacts/generated data; include directory tree + docs + dependency/config files; extract endpoints/entrypoints deterministically; then use RAG-selected top-K chunks (chunk important files and retrieve the most relevant snippets) to fit the LLM context window while keeping high signal.
