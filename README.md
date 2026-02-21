@@ -14,8 +14,11 @@ It downloads the repo as a ZIP, filters/chooses the most relevant files (README/
 fits them into the LLM context window, and calls an LLM to generate the summary.
 
 ### Docker Compose architecture
-```markdown
+
 ![Docker Compose architecture](docs/diagrams/readme-mermaid-01-d8bf1129.png)
+
+<details>
+<summary>Mermaid source (GitHub Web / VS Code)</summary>
 
 ```mermaid
 flowchart LR
@@ -31,8 +34,14 @@ flowchart LR
   end
 ```
 
+</details>
+
 ### API + RAG flow
+
 ![API + RAG flow](docs/diagrams/readme-mermaid-02-9c8d8587.png)
+
+<details>
+<summary>Mermaid source (GitHub Web / VS Code)</summary>
 
 ```mermaid
 sequenceDiagram
@@ -63,6 +72,8 @@ sequenceDiagram
     L-->>A: JSON summary
     A-->>S: { summary, technologies, structure, evidence, confidence }
 ```
+
+</details>
 
 ## Screenshots
 
