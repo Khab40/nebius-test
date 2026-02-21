@@ -1,5 +1,10 @@
 # Repo Summarizer API (FastAPI)
 
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688)
+![Docker](https://img.shields.io/badge/docker-ready-2496ED)
+![RAG](https://img.shields.io/badge/RAG-top--K%20chunks-orange)
+
 API service that accepts a public GitHub repository URL and returns:
 - a human-readable summary
 - main technologies used
@@ -7,6 +12,60 @@ API service that accepts a public GitHub repository URL and returns:
 
 It downloads the repo as a ZIP, filters/chooses the most relevant files (README/docs/configs/tree + selected code),
 fits them into the LLM context window, and calls an LLM to generate the summary.
+
+## Docker Compose architecture
+```mermaid
+flowchart LR
+  U["User / Browser"] -->|HTTP :8501| S["Streamlit UI"]
+  S -->|POST /summarize| A["FastAPI API :8000"]
+  A -->|Download ZIP| G["GitHub Repo"]
+  A -->|Embeddings| E["Embedding API"]
+  A -->|Completion| L["LLM Provider"]
+
+  subgraph DockerCompose
+    S
+    A
+  end
+```
+
+### API + RAG flow
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as User
+    participant S as Streamlit UI
+    participant A as FastAPI API
+    participant G as GitHub
+    participant R as RAG (chunk + retrieve)
+    participant E as Embeddings (OpenAI)
+    participant L as LLM (OpenAI/Nebius)
+
+    U->>S: Enter repo URL + click Summarize
+    S->>A: POST /summarize { github_url }
+    A->>G: Download repo (ZIP)
+    A->>A: Filter/score files (docs/config/entrypoints)
+    A->>R: Chunk selected files
+
+    alt LLM_PROVIDER = openai
+        R->>E: Embed chunks + queries
+        E-->>R: Vectors
+        R-->>A: Top-K relevant chunks
+    else LLM_PROVIDER = nebius
+        R-->>A: Keyword-based Top-K chunks
+    end
+
+    A->>L: Prompt (tree + facts + Top-K chunks)
+    L-->>A: JSON summary
+    A-->>S: { summary, technologies, structure, evidence, confidence }
+```
+
+## Screenshots
+
+Example embedding:
+
+![UI Home](docs/screenshots/ui-home.png)
+![UI Result](docs/screenshots/ui-result.png)
 
 ## Requirements
 - Python 3.10+
@@ -73,6 +132,8 @@ docker compose up --build
 docker build -f app/Dockerfile -t repo-summarizer-api:local .
 ```
 
+Note: docker-compose includes an API healthcheck using `GET /health` and Streamlit waits for the API to become healthy.
+
 ## Error format
 On error:
 ```json
@@ -86,7 +147,6 @@ On error:
 4) Deterministic extraction: dependencies + entrypoints + detected endpoints
 5) RAG-selected code chunks: chunk selected important files and retrieve top relevant chunks for: what it does / how to run / endpoints / structure / deps
 
-
 ## RAG retrieval (implementation)
 To fit large repositories into the LLM context while keeping high signal, the service uses a lightweight RAG step:
 - select important files (README/docs/configs + entrypoints/routes)
@@ -96,7 +156,7 @@ To fit large repositories into the LLM context while keeping high signal, the se
 
 The selected snippets (with evidence file names) are combined with a depth‑limited directory tree and deterministic facts before calling the LLM.
 
-## Answers on submission questions (Khab40)
+## Answers on submission questions
 Q: Which model you chose and why?
 A: I chose gpt-4o-mini for Open AI and meta-llama/Meta-Llama-3.1-8B-Instruct-fast for Nebius because of the wish to keep balance between quality, speed and cost.
 

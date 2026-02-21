@@ -1,9 +1,13 @@
 import json
 import re
+import logging
 from pathlib import Path
 from typing import Dict, List
 
+logger = logging.getLogger(__name__)
+
 from .selection import build_tree, select_files, safe_read_text, detect_languages_and_tools
+from .llm import chat_completion, LLMError
 
 # RAG chunk retrieval (top-K relevant snippets). If app/rag.py is missing or disabled,
 # summarization will fall back to the classic context builder.
@@ -58,40 +62,47 @@ async def build_rag_context(repo_root: Path, max_chars: int = 14000) -> tuple[st
 
     Returns: (context_text, evidence_files)
     """
+    # If rag.py is missing/disabled, fall back to classic context building.
     if build_chunks is None or rag_select is None:
         return "", []
 
-    chunks = build_chunks(repo_root)
-    queries = [
-        "What does this project do?",
-        "How do you install, run, and test this project?",
-        "What is the project structure (src/tests/docs)?",
-        "What API endpoints exist and how are they implemented?",
-        "What are the main dependencies and technologies?",
-    ]
-    picked = await rag_select(chunks, queries, top_k=10)
+    # If anything in retrieval fails (embeddings/network/etc.), do NOT crash the request.
+    # Return an empty context so caller falls back to classic mode.
+    try:
+        chunks = build_chunks(repo_root)
+        queries = [
+            "What does this project do?",
+            "How do you install, run, and test this project?",
+            "What is the project structure (src/tests/docs)?",
+            "What API endpoints exist and how are they implemented?",
+            "What are the main dependencies and technologies?",
+        ]
+        picked = await rag_select(chunks, queries, top_k=10)
 
-    evidence: List[str] = []
-    parts: List[str] = []
-    total = 0
+        evidence: List[str] = []
+        parts: List[str] = []
+        total = 0
 
-    for c in picked:
-        evidence.append(c.file)
-        chunk = f"\n\n=== RAG CHUNK: {c.file} ===\n{c.text.strip()}"
-        if total + len(chunk) > max_chars:
-            break
-        parts.append(chunk)
-        total += len(chunk)
+        for c in picked:
+            evidence.append(c.file)
+            chunk = f"\n\n=== RAG CHUNK: {c.file} ===\n{c.text.strip()}"
+            if total + len(chunk) > max_chars:
+                break
+            parts.append(chunk)
+            total += len(chunk)
 
-    # de-dupe evidence preserving order
-    seen = set()
-    evidence_unique: List[str] = []
-    for e in evidence:
-        if e not in seen:
-            seen.add(e)
-            evidence_unique.append(e)
+        # de-dupe evidence preserving order
+        seen = set()
+        evidence_unique: List[str] = []
+        for e in evidence:
+            if e not in seen:
+                seen.add(e)
+                evidence_unique.append(e)
 
-    return "\n".join(parts).strip(), evidence_unique[:50]
+        return "\n".join(parts).strip(), evidence_unique[:50]
+    except Exception as e:
+        logger.exception("RAG retrieval failed; falling back to classic context. Reason: %s", e)
+        return "", []
 
 
 def parse_llm_json(text: str) -> Dict:

@@ -1,4 +1,7 @@
 import os
+import json
+import logging
+from datetime import datetime, timezone
 
 # Load .env only for local development.
 # Set ENV=prod (or anything other than "dev") to disable.
@@ -9,6 +12,42 @@ if os.getenv("ENV", "dev").lower() == "dev":
     except Exception:
         # dotenv is optional in production; if missing, rely on real env vars.
         pass
+    
+
+# --- Structured JSON logging setup ---
+
+class JsonFormatter(logging.Formatter):
+    """Minimal JSON formatter for container-friendly logs."""
+
+    def format(self, record: logging.LogRecord) -> str:
+        payload = {
+            "ts": datetime.now(timezone.utc).isoformat(),
+            "level": record.levelname,
+            "logger": record.name,
+            "msg": record.getMessage(),
+        }
+        if record.exc_info:
+            payload["exc_info"] = self.formatException(record.exc_info)
+        return json.dumps(payload, ensure_ascii=False)
+
+
+def setup_logging() -> None:
+    level_name = os.getenv("LOG_LEVEL", "INFO").upper().strip()
+    level = getattr(logging, level_name, logging.INFO)
+
+    root = logging.getLogger()
+    root.setLevel(level)
+
+    # Avoid duplicate handlers in reload mode
+    if not root.handlers:
+        handler = logging.StreamHandler()
+        handler.setFormatter(JsonFormatter())
+        root.addHandler(handler)
+
+
+setup_logging()
+logger = logging.getLogger(__name__)
+logger.info("Starting Repo Summarizer API")
     
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
