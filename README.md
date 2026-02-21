@@ -15,7 +15,7 @@ fits them into the LLM context window, and calls an LLM to generate the summary.
 
 ## Docker Compose architecture
 ```markdown
-![Docker Compose architecture](docs/diagrams/docker-compose-architecture.png)
+![Docker Compose architecture](docs/diagrams/readme-mermaid-01-d8bf1129.png)
 
 ```mermaid
 flowchart LR
@@ -32,7 +32,7 @@ flowchart LR
 ```
 
 ### API + RAG flow
-![API + RAG flow](docs/diagrams/api+rag-flow.png)
+![API + RAG flow](docs/diagrams/readme-mermaid-02-9c8d8587.png)
 
 ```mermaid
 sequenceDiagram
