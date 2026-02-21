@@ -171,6 +171,25 @@ To fit large repositories into the LLM context while keeping high signal, the se
 
 The selected snippets (with evidence file names) are combined with a depth‑limited directory tree and deterministic facts before calling the LLM.
 
+## Tests (pytest)
+
+### Install (includes test deps)
+
+```bash
+pip install -r app/requirements.txt
+```
+
+### Run
+
+```bash
+pytest -q
+```
+
+### Create the first unit tests
+
+This repo uses only local/mocked tests (no real calls to GitHub/OpenAI/Nebius).
+
+
 ## Answers on submission questions
 Q: Which model you chose and why?
 A: I chose gpt-4o-mini for Open AI and meta-llama/Meta-Llama-3.1-8B-Instruct-fast for Nebius because of the wish to keep balance between quality, speed and cost.

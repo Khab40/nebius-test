@@ -117,6 +117,26 @@ async def summarize(req: SummarizeRequest):
         return JSONResponse(status_code=429, content={"status": "error", "message": str(e)})
     except (GitHubError, SummarizationError) as e:
         return JSONResponse(status_code=500, content={"status": "error", "message": str(e)})
-    except Exception:
-        # last resort, don’t leak internals
-        return JSONResponse(status_code=500, content={"status": "error", "message": "Unexpected server error."})
+    except Exception as e:
+        # last resort — log full stack trace
+        logger.exception("Unhandled error in /summarize")
+
+        env = os.getenv("ENV", "prod").lower().strip()
+        if env == "dev":
+            return JSONResponse(
+                status_code=500,
+                content={
+                    "status": "error",
+                    "message": "Unexpected server error.",
+                    "detail": str(e),
+                },
+            )
+
+        # In non-dev environments, avoid leaking internals
+        return JSONResponse(
+            status_code=500,
+            content={
+                "status": "error",
+                "message": "Unexpected server error.",
+            },
+        )
