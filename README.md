@@ -20,6 +20,8 @@ fits them into the LLM context window, and calls an LLM to generate the summary.
 <details>
 <summary>Mermaid source (GitHub Web / VS Code)</summary>
 
+![Diagram 1](docs/diagrams/readme-mermaid-01-d8bf1129.png)
+
 ```mermaid
 flowchart LR
   U["User / Browser"] -->|HTTP :8501| S["Streamlit UI"]
@@ -42,6 +44,8 @@ flowchart LR
 
 <details>
 <summary>Mermaid source (GitHub Web / VS Code)</summary>
+
+![Diagram 2](docs/diagrams/readme-mermaid-02-9c8d8587.png)
 
 ```mermaid
 sequenceDiagram
