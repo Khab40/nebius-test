@@ -13,7 +13,7 @@ API service that accepts a public GitHub repository URL and returns:
 It downloads the repo as a ZIP, filters/chooses the most relevant files (README/docs/configs/tree + selected code),
 fits them into the LLM context window, and calls an LLM to generate the summary.
 
-## Docker Compose architecture
+### Docker Compose architecture
 ```markdown
 ![Docker Compose architecture](docs/diagrams/readme-mermaid-01-d8bf1129.png)
 
