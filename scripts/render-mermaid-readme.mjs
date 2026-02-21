@@ -69,9 +69,22 @@ for (const b of blocks) {
 
   // Render PNG (transparent background looks nice on both themes)
   // Using -b transparent; if you prefer white: -b white
-  execFileSync("npx", ["-y", "@mermaid-js/mermaid-cli", "-i", mmdPath, "-o", pngPath, "-b", "transparent"], {
-    stdio: "inherit",
-  });
+  execFileSync(
++    "npx",
++    [
++      "-y",
++      "@mermaid-js/mermaid-cli",
++      "-p",
++      "scripts/puppeteer-config.json",
++      "-i",
++      input,
++      "-o",
++      output,
++      "-b",
++      "transparent"
++    ],
++    { stdio: "inherit" }
++  );
 
   hashes.push({ baseName, pngPath });
 
