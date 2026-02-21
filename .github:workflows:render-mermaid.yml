@@ -1,0 +1,42 @@
+name: Render Mermaid (README -> PNG)
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "README.md"
+      - "scripts/render-mermaid-readme.mjs"
+      - ".github/workflows/render-mermaid.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Render diagrams and patch README
+        run: node scripts/render-mermaid-readme.mjs
+
+      - name: Commit changes (if any)
+        run: |
+          if git status --porcelain | grep .; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add README.md docs/diagrams .mermaid-tmp || true
+            # Don't commit temp folder; keep it out of repo
+            git reset .mermaid-tmp || true
+            git commit -m "chore(docs): render mermaid PNG fallbacks"
+            git push
+          else
+            echo "No changes to commit."
+          fi

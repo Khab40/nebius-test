@@ -14,6 +14,9 @@ It downloads the repo as a ZIP, filters/chooses the most relevant files (README/
 fits them into the LLM context window, and calls an LLM to generate the summary.
 
 ## Docker Compose architecture
+```markdown
+![Docker Compose architecture](docs/diagrams/docker-compose-architecture.png)
+
 ```mermaid
 flowchart LR
   U["User / Browser"] -->|HTTP :8501| S["Streamlit UI"]
@@ -29,6 +32,7 @@ flowchart LR
 ```
 
 ### API + RAG flow
+![API + RAG flow](docs/diagrams/api+rag-flow.png)
 
 ```mermaid
 sequenceDiagram
