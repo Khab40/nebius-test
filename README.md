@@ -17,8 +17,7 @@ fits them into the LLM context window, and calls an LLM to generate the summary.
 
 ![Docker Compose architecture](docs/diagrams/readme-mermaid-01-d8bf1129.png)
 
-<details>
-<summary>Mermaid source (GitHub Web / VS Code)</summary>
+![Diagram 1](docs/diagrams/readme-mermaid-01-d8bf1129.png)
 
 ```mermaid
 flowchart LR
@@ -40,8 +39,7 @@ flowchart LR
 
 ![API + RAG flow](docs/diagrams/readme-mermaid-02-9c8d8587.png)
 
-<details>
-<summary>Mermaid source (GitHub Web / VS Code)</summary>
+![Diagram 2](docs/diagrams/readme-mermaid-02-9c8d8587.png)
 
 ```mermaid
 sequenceDiagram
