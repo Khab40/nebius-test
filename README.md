@@ -17,6 +17,8 @@ fits them into the LLM context window, and calls an LLM to generate the summary.
 ```markdown
 ![Docker Compose architecture](docs/diagrams/readme-mermaid-01-d8bf1129.png)
 
+![Diagram 1](docs/diagrams/readme-mermaid-01-d8bf1129.png)
+
 ```mermaid
 flowchart LR
   U["User / Browser"] -->|HTTP :8501| S["Streamlit UI"]
@@ -33,6 +35,8 @@ flowchart LR
 
 ### API + RAG flow
 ![API + RAG flow](docs/diagrams/readme-mermaid-02-9c8d8587.png)
+
+![Diagram 2](docs/diagrams/readme-mermaid-02-9c8d8587.png)
 
 ```mermaid
 sequenceDiagram
