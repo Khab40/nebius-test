@@ -1,10 +1,10 @@
 # Repo Summarizer API (FastAPI)
 
-[![CI](https://github.com/Khab40/nebius-test/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Khab40/nebius-test/actions/workflows/ci.yml)
-[![Release](https://github.com/Khab40/nebius-test/actions/workflows/release.yml/badge.svg)](https://github.com/Khab40/nebius-test/actions/workflows/release.yml)
-[![Docker API](https://img.shields.io/badge/GHCR-nebius--test--api-blue)](https://github.com/Khab40/nebius-test/pkgs/container/nebius-test-api)
-[![Docker UI](https://img.shields.io/badge/GHCR-nebius--test--ui-blue)](https://github.com/Khab40/nebius-test/pkgs/container/nebius-test-ui)
-[![Release version](https://img.shields.io/github/v/release/Khab40/nebius-test)](https://github.com/Khab40/nebius-test/releases)
+[![CI](https://github.com/khab40/nebius-test/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Khab40/nebius-test/actions/workflows/ci.yml)
+[![Release](https://github.com/khab40/nebius-test/actions/workflows/release.yml/badge.svg)](https://github.com/Khab40/nebius-test/actions/workflows/release.yml)
+[![Docker API](https://img.shields.io/badge/GHCR-nebius--test--api-blue)](https://github.com/khab40/nebius-test/pkgs/container/nebius-test-api)
+[![Docker UI](https://img.shields.io/badge/GHCR-nebius--test--ui-blue)](https://github.com/khab40/nebius-test/pkgs/container/nebius-test-ui)
+[![Release version](https://img.shields.io/github/v/release/khab40/nebius-test)](https://github.com/khab40/nebius-test/releases)
 
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688)

@@ -16,6 +16,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Compute lowercase image repo
+        id: img
+        shell: bash
+        run: |
+          # GHCR requires lowercase repository names in tags.
+          # GITHUB_REPOSITORY can include uppercase (e.g., khab40/nebius-test), so normalize.
+          echo "repo_lc=${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+
       - name: Extract tag
         id: meta
         run: echo "tag=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
@@ -37,8 +45,8 @@ jobs:
           file: app/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}-api:${{ steps.meta.outputs.tag }}
-            ghcr.io/${{ github.repository }}-api:latest
+            ghcr.io/${{ steps.img.outputs.repo_lc }}-api:${{ steps.meta.outputs.tag }}
+            ghcr.io/${{ steps.img.outputs.repo_lc }}-api:latest
 
       - name: Build & push UI image
         uses: docker/build-push-action@v6
@@ -47,8 +55,8 @@ jobs:
           file: ui/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}-ui:${{ steps.meta.outputs.tag }}
-            ghcr.io/${{ github.repository }}-ui:latest
+            ghcr.io/${{ steps.img.outputs.repo_lc }}-ui:${{ steps.meta.outputs.tag }}
+            ghcr.io/${{ steps.img.outputs.repo_lc }}-ui:latest
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
