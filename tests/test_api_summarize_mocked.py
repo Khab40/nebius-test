@@ -21,35 +21,36 @@ def test_summarize_happy_path_mocked(monkeypatch, sample_repo_zip_bytes):
     # - github.com/{org}/{repo}/archive/refs/heads/{branch}.zip
     # - api.github.com/repos/{org}/{repo} (to find default_branch)
     with respx.mock(assert_all_called=False) as rs:
-        rs.get(url__regex=r"https://codeload\\.github\\.com/.+?/zip/refs/heads/.+").respond(
+        rs.get(url__regex=r"https://codeload\.github\.com/.+?/zip/refs/heads/.+").respond(
             200, content=sample_repo_zip_bytes, headers={"Content-Type": "application/zip"}
         )
-        rs.get(url__regex=r"https://github\\.com/.+?/archive/refs/heads/.+\\.zip").respond(
+        rs.get(url__regex=r"https://github\.com/.+?/archive/refs/heads/.+\.zip").respond(
             200, content=sample_repo_zip_bytes, headers={"Content-Type": "application/zip"}
         )
-        rs.get(url__regex=r"https://api\\.github\\.com/repos/.+?/.+").respond(
+        # Repo metadata (default branch). Match optional trailing slash and query string.
+        rs.get(url__regex=r"https://api\.github\.com/repos/[^/]+/[^/?#]+/?(\?.*)?$").respond(
             200,
             json={"default_branch": "main"},
             headers={"Content-Type": "application/json"},
         )
 
         # Some implementations use GitHub API zipball endpoints
-        rs.get(url__regex=r"https://api\\.github\\.com/repos/.+?/.+/(zipball|tarball).*").respond(
+        rs.get(url__regex=r"https://api\.github\.com/repos/.+?/.+/(zipball|tarball).*").respond(
             200, content=sample_repo_zip_bytes, headers={"Content-Type": "application/zip"}
         )
 
         # Some implementations may fetch README via raw.githubusercontent.com
-        rs.get(url__regex=r"https://raw\\.githubusercontent\\.com/.+?/README\\.md").respond(
+        rs.get(url__regex=r"https://raw\.githubusercontent\.com/.+?/README\.md").respond(
             200, text="# Demo Repo\n", headers={"Content-Type": "text/plain"}
         )
 
         # Very broad safety net for any GitHub-hosted zip URL variants
-        rs.get(url__regex=r"https://(codeload\\.github\\.com|github\\.com)/.+?\\.zip").respond(
+        rs.get(url__regex=r"https://(codeload\.github\.com|github\.com)/.+?\.zip").respond(
             200, content=sample_repo_zip_bytes, headers={"Content-Type": "application/zip"}
         )
 
         client = TestClient(app)
-        resp = client.post("/summarize", json={"github_url": "https://github.com/org/repo"})
+        resp = client.post("/summarize", json={"github_url": "https://github.com/Khab40/nebius-test"})
 
         assert resp.status_code == 200, resp.text
         data = resp.json()

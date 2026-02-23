@@ -1,5 +1,6 @@
 services:
   api:
+    image: ${REPO_SUMMARIZER_API_IMAGE:-ghcr.io/khab40/repo-summarizer-api:latest}
     build:
       context: .
       dockerfile: app/Dockerfile
@@ -30,6 +31,7 @@ services:
       retries: 10
       start_period: 10s
   ui:
+    image: ${REPO_SUMMARIZER_UI_IMAGE:-ghcr.io/khab40/repo-summarizer-ui:latest}
     build:
       context: .
       dockerfile: ui/Dockerfile

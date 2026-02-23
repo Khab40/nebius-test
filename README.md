@@ -1,4 +1,9 @@
+
 # Repo Summarizer API (FastAPI)
+
+[![CI](https://github.com/khab40/repo-summarizer-api/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/khab40/repo-summarizer-api/actions/workflows/ci.yml)
+[![Release](https://github.com/khab40/repo-summarizer-api/actions/workflows/release.yml/badge.svg)](https://github.com/khab40/repo-summarizer-api/actions/workflows/release.yml)
+[![Docker Image](https://img.shields.io/badge/ghcr-khab40%2Frepo--summarizer--api-blue)](https://github.com/khab40/repo-summarizer-api/pkgs/container)
 
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688)
@@ -196,3 +201,30 @@ A: I chose gpt-4o-mini for Open AI and meta-llama/Meta-Llama-3.1-8B-Instruct-fas
 
 Q: Your approach to handling repository contents
 A: Exclude binaries/build artifacts/generated data; include directory tree + docs + dependency/config files; extract endpoints/entrypoints deterministically; then use RAG-selected top-K chunks (chunk important files and retrieve the most relevant snippets) to fit the LLM context window while keeping high signal.
+
+
+## Release images
+
+Prebuilt container images are published to GitHub Container Registry (GHCR) for both API and UI.
+
+You can pull them with:
+
+```bash
+docker pull ghcr.io/<your-org>/repo-summarizer-api:latest
+docker pull ghcr.io/<your-org>/repo-summarizer-ui:latest
+```
+
+If you want docker‑compose to use the published images instead of building locally, set:
+
+```bash
+export REPO_SUMMARIZER_API_IMAGE=ghcr.io/<your-org>/repo-summarizer-api:latest
+export REPO_SUMMARIZER_UI_IMAGE=ghcr.io/<your-org>/repo-summarizer-ui:latest
+```
+
+Then run:
+
+```bash
+docker compose up
+```
+
+(Replace `<your-org>` with your GitHub username or organization.)
