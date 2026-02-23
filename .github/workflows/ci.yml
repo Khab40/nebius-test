@@ -26,6 +26,10 @@ jobs:
         with:
           version: "latest"
 
+      - name: Create virtualenv
+        run: |
+          uv venv
+
       - name: Install dependencies (app + ui)
         run: |
           uv pip install -r app/requirements.txt
