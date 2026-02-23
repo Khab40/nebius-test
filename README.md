@@ -1,9 +1,9 @@
 
 # Repo Summarizer API (FastAPI)
 
-[![CI](https://github.com/khab40/repo-summarizer-api/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/khab40/repo-summarizer-api/actions/workflows/ci.yml)
-[![Release](https://github.com/khab40/repo-summarizer-api/actions/workflows/release.yml/badge.svg)](https://github.com/khab40/repo-summarizer-api/actions/workflows/release.yml)
-[![Docker Image](https://img.shields.io/badge/ghcr-khab40%2Frepo--summarizer--api-blue)](https://github.com/khab40/repo-summarizer-api/pkgs/container)
+[![CI](https://github.com/khab40/repo-summarizer-api/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Khab40/repo-summarizer-api/actions/workflows/ci.yml)
+[![Release](https://github.com/khab40/repo-summarizer-api/actions/workflows/release.yml/badge.svg)](https://github.com/Khab40/repo-summarizer-api/actions/workflows/release.yml)
+[![Docker Image](https://img.shields.io/badge/ghcr-khab40%2Frepo--summarizer--api-blue)](https://github.com/Khab40/repo-summarizer-api/pkgs/container)
 
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688)
