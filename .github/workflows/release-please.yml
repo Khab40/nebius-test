@@ -12,7 +12,9 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: google-github-actions/release-please-action@v4
+      - uses: googleapis/release-please-action@v4
         with:
+          # Optional: if you want this workflow to trigger other workflows (e.g., tag-based Docker publish),
+          # use a PAT with repo/workflow scopes stored as RELEASE_PLEASE_TOKEN. Otherwise GITHUB_TOKEN works.
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
           release-type: simple
-          package-name: nebius-test
