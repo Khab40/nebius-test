@@ -214,8 +214,8 @@ Prebuilt container images are published to GitHub Container Registry (GHCR) for 
 You can pull them with:
 
 ```bash
-docker pull ghcr.io/<your-org>/repo-summarizer-api:latest
-docker pull ghcr.io/<your-org>/repo-summarizer-ui:latest
+docker pull ghcr.io/khab40/repo-summarizer-api:latest
+docker pull ghcr.io/khab40/repo-summarizer-ui:latest
 ```
 
 If you want docker‑compose to use the published images instead of building locally, set:
@@ -231,4 +231,3 @@ Then run:
 docker compose up
 ```
 
-(Replace `<your-org>` with your GitHub username or organization.)
