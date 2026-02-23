@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/logo.png" width="200" alt="Nebius Test Logo"/>
+</p>
+
 # Repo Summarizer API (FastAPI)
 
 [![CI](https://github.com/khab40/nebius-test/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Khab40/nebius-test/actions/workflows/ci.yml)
