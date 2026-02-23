@@ -221,8 +221,8 @@ docker pull ghcr.io/<your-org>/repo-summarizer-ui:latest
 If you want docker‑compose to use the published images instead of building locally, set:
 
 ```bash
-export REPO_SUMMARIZER_API_IMAGE=ghcr.io/<your-org>/repo-summarizer-api:latest
-export REPO_SUMMARIZER_UI_IMAGE=ghcr.io/<your-org>/repo-summarizer-ui:latest
+export REPO_SUMMARIZER_API_IMAGE=ghcr.io/khab40/repo-summarizer-api:latest
+export REPO_SUMMARIZER_UI_IMAGE=ghcr.io/khab40/repo-summarizer-ui:latest
 ```
 
 Then run:
