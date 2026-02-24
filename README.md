@@ -230,6 +230,7 @@ export REPO_SUMMARIZER_API_IMAGE=ghcr.io/khab40/nebius-test-api:latest
 export REPO_SUMMARIZER_UI_IMAGE=ghcr.io/khab40/nebius-test-ui:latest
 ```
 
+
 Then run:
 
 ```bash
