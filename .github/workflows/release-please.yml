@@ -18,3 +18,6 @@ jobs:
           # use a PAT with repo/workflow scopes stored as RELEASE_PLEASE_TOKEN. Otherwise GITHUB_TOKEN works.
           token: ${{ secrets.NEBIUS_TEST_PAT }}
           release-type: simple
+
+
+          
